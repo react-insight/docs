@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title> react-insight</title>
+</head>
+<body>
+  <div id="root"></div>
+  <script src="https://unpkg.com/react@15/dist/react.js"></script>
+  <script src="https://unpkg.com/react-dom@15/dist/react-dom.js"></script>
+  <script charset="utf-8">
+  class App extends React.Component {
+    constructor(props) {
+      super(props);
+    }
+    render() {
+      return (<div className="insight-root">Hello World</div>);
+    }
+  }
+  function isClass(type) {
+    // React.Component这个父类有这个标志。
+    return (
+      Boolean(type.prototype) &&
+      Boolean(type.prototype.isReactComponent)
+    );
+    // 这个函数将仅处理组合类型的元素，比如，它处理<App/>和<Button/>,但不处理<div/>
+  }
+
+  // 这个函数将传入一个React Element（如<App/>),并且返回一个DOM或者Native节点代表一个已装载的树
+  function mountComposite(element) {
+    var type = element.type;
+    var props = element.props;
+
+    // 通过识别这个type，调用函数或者调用类创造一个实例，并执行render方法，产生这个待渲染的元素。
+    var renderedElement = null;
+    if (isClass(type)) {
+      // 组件类
+      var publicInstance = new type(props);
+      // 设置其属性
+      publicInstance.props = props;
+      //调用必要的声明周期方法
+      if (publicInstance.componentWillMount) {
+        publicInstance.componentWillMount();
+      }
+      // 通过调用render方法得到待渲染的元素
+      renderedElement = publicInstance.render();
+    } else if (typeof type === 'function') {
+      // 无状态组件
+      renderedElement = type(props);
+    }
+    return mount(renderedElement);
+  }
+  // 这个函数仅处理宿主类型元素
+  // 例如，它处理<div/>和<p/>,但不是<App/>
+  function mountHost(element) {
+    var type = element.type;
+    var props = element.props;
+    var children = props.children || [];
+    if (!Array.isArray(children)) {
+      children = [children];
+    }
+    children = children.filter(Boolean);
+    // 这部分应该不在这个识别算法中。
+    // 不同的渲染器应该初始化不同的节点
+    // 例如，React Native将创建ios或者android视图。
+    var node = docuemnt.createElement(type);
+    Object.keys(props).forEach(propName => {
+      if (propName !== 'children') {
+        node.setAttribute(propName,props[propName]);
+      }
+    });
+    // 装载子元素
+    children.forEach(childElement => {
+      var childNode = mount(childElement);
+      node.appendChild(childNode);
+    });
+    return node;
+  }
+
+  function mount(element) {
+    var type = element.type;
+    if (typeof type === 'function') {
+      return mountComposite(element);
+    } else if (typeof type === 'string') {
+      return mountHost(element);
+    }
+  }
+
+  var rootEl = document.getElemnetById('root');
+  var node = mount(<App/>);
+  rootEl.appendChild(node);
+  </script>
+</body>
+</html>
