@@ -1,11 +1,11 @@
-#Implementation Notes
+# Implementation Notes
 
   这部分来源于完成栈识别算法的笔记。它是一份技术文档并假定读者对react的公共api也包括react如何划分为核心，渲染器，识别算法有很深的理解。如果你还不熟react的[代码库](https://facebook.github.io/react/contributing/codebase-overview.html)，请首先阅读[代码库]
 (https://facebook.github.io/react/contributing/codebase-overview.html)。
 
   栈识别算法驱动着今天所有使用react构建的产品。它位于[src/renderers/shared/reconciler](http://wwww.github.com/facebook/react/src/renderers/shared/reconciler)被React DOM和 React Native使用。
   
-##视频：从零开始构建React
+## 视频：从零开始构建React
  
  [Paul O'Shannessy](https://www.twitter.com/zpao)关于[如何从零构建react框架](https://www.youtube.com/watch?v=_MAD4Oly9yg)的演讲激发了写这篇文档的动力。
  
@@ -15,7 +15,7 @@
 
 这个识别算法并没有公共的API.渲染器像React DOM和React Native使用它有效地更新用户使用react构建的用户界面。
 
-##递归装载
+## 递归装载
 
 让我们思考你第一次装载一个组件:
 ```javascript
@@ -78,7 +78,7 @@ rootEl.appendChild(node);
 2. 用户定义的组件（如App)可能是一个类或者是函数，但是他们都返回React elements
 3. 装载是一个递归的过程，在这个过程中，react将使用顶级React元素创造一颗DOM或者Native树
 
-##装载宿主元素
+## 装载宿主元素
 
 如果我们不渲染任何东西到屏幕上，那么这个步骤将是无用的。
 
@@ -179,7 +179,7 @@ rootEl.appendChild(node);
 
 上边的代码可以运行，但是离真实的识别算法完成还很远，关键缺乏的特征是不支持更新。
 
-##内部实例介绍
+## 内部实例介绍
 
 React框架的核心特点是你可以重用一切并且不需要重建dom或者重置状态。
 
@@ -416,7 +416,7 @@ function mountTree(element,containerNode) {
 
 现在重复运行unmountTree()或者运行mountTree()移除旧的dom树，运行componentWillUnmount()生命周期钩子在组件上。
 
-##更新
+## 更新
 
  在前面章节，我们完成了卸载。然而如果当任何属性改变就重新卸载和插入整个DOM树，那么React并没有太大的实用性。识别算法的目标是重用已存在的实例，这些实例保留对应的DOM节点和状态。
  ```javascript
@@ -452,7 +452,7 @@ lthough what really happens is that we walk the internal tree recursively and le
 
 这个函数的职责是将nextElement提供的最新描述给组件或者它的子组件。这部分经常被描述为"虚拟DOM更新"。尽管实际上发生的是我们经常说的内部实例树的递归，同时每个实例树都接受一个更新。
 
-##更新复合组件
+## 更新复合组件
 
 当一个复合组件接受一个新元素时，我们运行componentWillUpdate这个生命周期钩子。
 
@@ -684,7 +684,7 @@ mountTree(<App/>,rootEl);
 
 + 在内部实例的属性像underscore一样带有前置下划线。在整个代码库公开部分，他们被认为是只读的。
 
-##将来的方向#
+## 将来的方向
 
 栈识别算法有其内在的局限性比如其是同步的,不能中断当前操作,也不能将操作分块。新的Fiber识别算法还在开发当中，其架构和栈识别算法完全不同。将来，我们倾向用它取代栈识别算法，但是在那一刻到来前还有许多工作要做。
 
