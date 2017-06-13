@@ -1,21 +1,21 @@
-#Implementation Notes
+# Implementation Notes
 
   这部分来源于完成栈识别算法的笔记。它是一份技术文档并假定读者对react的公共api也包括react如何划分为核心，渲染器，识别算法有很深的理解。如果你还不熟react的[代码库](https://facebook.github.io/react/contributing/codebase-overview.html)，请首先阅读[代码库]
 (https://facebook.github.io/react/contributing/codebase-overview.html)。
 
   栈识别算法驱动着今天所有使用react构建的产品。它位于[src/renderers/shared/reconciler](http://wwww.github.com/facebook/react/src/renderers/shared/reconciler)被React DOM和 React Native使用。
   
-##视频：从零开始构建React
+## 视频：从零开始构建React
  
  [Paul O'Shannessy](https://www.twitter.com/zpao)关于[如何从零构建react框架](https://www.youtube.com/watch?v=_MAD4Oly9yg)的演讲激发了写这篇文档的动力。
  
  这篇文档和他的演讲简化了真实react的代码库，因此你也许通过熟悉他们两者，可以更好的理解react代码库。
  
-##总览
+## 总览
 
 这个识别算法并没有公共的API.渲染器像React DOM和React Native使用它有效地更新用户使用react构建的用户界面。
 
-##递归装载
+## 递归装载
 
 让我们思考你第一次装载一个组件:
 ```javascript
@@ -357,7 +357,7 @@ var root = document.getElementById('root');
 mountTree(<App/>,root);
 ```
 
-##卸载
+## 卸载
 
 现在我们有了可以联系他们孩子和DOM节点的内部实例，我们可以用他们完成卸载。
 对于一个复合组件，调用生命周期方法递归卸载。
@@ -416,7 +416,7 @@ function mountTree(element,containerNode) {
 
 现在重复运行unmountTree()或者运行mountTree()移除旧的dom树，运行componentWillUnmount()生命周期钩子在组件上。
 
-##更新
+## 更新
 
  在前面章节，我们完成了卸载。然而如果当任何属性改变就重新卸载和插入整个DOM树，那么React并没有太大的实用性。识别算法的目标是重用已存在的实例，这些实例保留对应的DOM节点和状态。
  ```javascript
@@ -452,7 +452,7 @@ lthough what really happens is that we walk the internal tree recursively and le
 
 这个函数的职责是将nextElement提供的最新描述给组件或者它的子组件。这部分经常被描述为"虚拟DOM更新"。尽管实际上发生的是我们经常说的内部实例树的递归，同时每个实例树都接受一个更新。
 
-##更新复合组件
+## 更新复合组件
 
 当一个复合组件接受一个新元素时，我们运行componentWillUpdate这个生命周期钩子。
 
@@ -526,7 +526,7 @@ class DOMComponent {
   }
 }
 ```
-##更新宿主组件
+## 更新宿主组件
 
 宿主组件的更新方式是不同的，如DOMComponent。当他们接受一个元素时，他们需要更新背后特定平台的视图。
 以React DOM为例，这意味着更新DOM节点的属性。
@@ -608,7 +608,7 @@ class DOMComponent {
   }
 }
 ```
-##更新 
+## 更新 
 
 现在包括符合组件和宿主组件都完成了receive方法，我们可以改变以及函数mountTree仅当元素类型和最后一次相同时使用
 
@@ -643,7 +643,7 @@ mountTree(<App/>,rootEl);
 
 这些基本展现了react内部是如何运作的。
 
-##我们还没有提什么
+## 我们还没有提什么
 
 
 这份文档简化了真实的代码库。有一些方面很重要，但是我们并没有提及：
@@ -664,7 +664,7 @@ mountTree(<App/>,rootEl);
 
 +  React放当前更新到一个叫"transaction'的内部对象中。Transactions在跟踪声明周期钩子队列方面很有用，当前DOM嵌套错误警告，任何特定的全局更新。Transactions也确保React在更新后清空一切。例如，被React DOM提供的事务类将在任何更新后，重新存储输入的东西。
 
-##跳着看代码
+## 跳着看代码
 
 + [ReactMount](https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/dom/client/ReactMount.js)处可以发现本章节中提到的mountTree和unmountTree函数。它负责装载和卸载顶级类。[ReactNativeMount](https://github.com/facebook/react/blob/83381c1673d14cd16cf747e34c945291e5518a86/src/renderers/native/ReactNativeMount.js)完成了React Native中同样的功能。
 
@@ -684,7 +684,7 @@ mountTree(<App/>,rootEl);
 
 + 在内部实例的属性像underscore一样带有前置下划线。在整个代码库公开部分，他们被认为是只读的。
 
-##将来的方向#
+## 将来的方向
 
 栈识别算法有其内在的局限性比如其是同步的,不能中断当前操作,也不能将操作分块。新的Fiber识别算法还在开发当中，其架构和栈识别算法完全不同。将来，我们倾向用它取代栈识别算法，但是在那一刻到来前还有许多工作要做。
 
